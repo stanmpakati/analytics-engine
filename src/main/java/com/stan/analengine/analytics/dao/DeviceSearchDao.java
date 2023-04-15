@@ -1,22 +1,18 @@
 package com.stan.analengine.analytics.dao;
 
 import com.stan.analengine.analytics.dto.DeviceQueryDto;
+import com.stan.analengine.analytics.dto.PageViewsDto;
 import com.stan.analengine.model.BrowserEvent;
 import com.stan.analengine.model.Device;
+import com.stan.analengine.model.PageEvent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -73,5 +69,53 @@ public class DeviceSearchDao {
     TypedQuery<BrowserEvent> query = em.createQuery(criteriaQuery);
 
     return query.getResultStream().map(BrowserEvent::getDevice).collect(Collectors.toSet());
+  }
+
+//  public void getPageVisits(Date from, Date to) {
+//    CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+//
+//    CriteriaQuery<PageEvent> criteriaQuery = criteriaBuilder.createQuery(PageEvent.class);
+//
+//    List<Predicate> predicates = new ArrayList<>();
+//
+//    Root<PageEvent> root = criteriaQuery.from(PageEvent.class);
+//
+//    Predicate browserNamePredicate = criteriaBuilder
+//        .like(root.get("pageName"), "%" + deviceQueryDto.getBrowserName() + "%");
+//    predicates.add(browserNamePredicate);
+//
+//    Predicate activeEvents = criteriaBuilder
+//        .between(root.get("created"), from, to);
+//
+//    criteriaQuery.where(activeEvents);
+//
+//    TypedQuery<PageEvent> query = em.createQuery(criteriaQuery);
+//
+//  }
+
+  public List<PageViewsDto> findPageVisitCounts() {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+
+    Root<BrowserEvent> browserEvent = query.from(BrowserEvent.class);
+    Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
+
+    query.multiselect(pageEvent.get("pageName"), cb.count(pageEvent), cb.countDistinct(browserEvent.get("device")));
+    query.groupBy(pageEvent.get("pageName"));
+
+    List<Object[]> results = em.createQuery(query).getResultList();
+    return results.stream().map(o -> new PageViewsDto((String) o[0], (Long) o[1], (Long) o[2])).collect(Collectors.toList());
+  }
+
+  public List<Object[]> findPageVisitCounts(Date startDate, Date endDate) {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+    Root<BrowserEvent> browserEvent = query.from(BrowserEvent.class);
+    Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
+    query.multiselect(pageEvent.get("pageName"), cb.count(browserEvent), cb.countDistinct(browserEvent.get("device")));
+    query.where(cb.between(browserEvent.get("created"), startDate, endDate));
+    query.groupBy(pageEvent.get("pageName"));
+    return em.createQuery(query).getResultList();
   }
 }
