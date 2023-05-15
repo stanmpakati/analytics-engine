@@ -2,6 +2,7 @@ package com.stan.analengine.analytics.dao;
 
 import com.stan.analengine.analytics.dto.DeviceQueryDto;
 import com.stan.analengine.analytics.dto.PageViewsDto;
+import com.stan.analengine.analytics.dto.ReferrerDto;
 import com.stan.analengine.model.BrowserEvent;
 import com.stan.analengine.model.Device;
 import com.stan.analengine.model.PageEvent;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,7 +95,7 @@ public class DeviceSearchDao {
 //
 //  }
 
-  public List<PageViewsDto> findPageVisitCounts() {
+  public List<PageViewsDto> findPageVisitCounts(ZonedDateTime startDate, ZonedDateTime endDate) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
 
     CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
@@ -102,20 +104,41 @@ public class DeviceSearchDao {
     Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
 
     query.multiselect(pageEvent.get("pageName"), cb.count(pageEvent), cb.countDistinct(browserEvent.get("device")));
+
+    // Todo factor for one date but no other one
+    if (startDate != null && endDate != null) {
+      query.where(cb.between(browserEvent.get("created"), startDate, endDate));
+    }
     query.groupBy(pageEvent.get("pageName"));
 
     List<Object[]> results = em.createQuery(query).getResultList();
     return results.stream().map(o -> new PageViewsDto((String) o[0], (Long) o[1], (Long) o[2])).collect(Collectors.toList());
   }
 
-  public List<Object[]> findPageVisitCounts(Date startDate, Date endDate) {
+  public List<ReferrerDto> findReferrers(ZonedDateTime startDate, ZonedDateTime endDate) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
+
     CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+
     Root<BrowserEvent> browserEvent = query.from(BrowserEvent.class);
-    Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
-    query.multiselect(pageEvent.get("pageName"), cb.count(browserEvent), cb.countDistinct(browserEvent.get("device")));
-    query.where(cb.between(browserEvent.get("created"), startDate, endDate));
-    query.groupBy(pageEvent.get("pageName"));
-    return em.createQuery(query).getResultList();
+    Join<BrowserEvent, Device> device = browserEvent.join("device");
+
+    query.multiselect(device.get("referrer"), cb.count(browserEvent));
+    // Todo filter date
+    query.groupBy(device.get("referrer"));
+
+    List<Object[]> results = em.createQuery(query).getResultList();
+    return results.stream().map(o -> new ReferrerDto((String) o[0], (Long) o[1])).collect(Collectors.toList());
   }
+
+//  public List<Object[]> findPageVisitCounts(Date startDate, Date endDate) {
+//    CriteriaBuilder cb = em.getCriteriaBuilder();
+//    CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+//    Root<BrowserEvent> browserEvent = query.from(BrowserEvent.class);
+//    Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
+//    query.multiselect(pageEvent.get("pageName"), cb.count(browserEvent), cb.countDistinct(browserEvent.get("device")));
+//    query.where(cb.between(browserEvent.get("created"), startDate, endDate));
+//    query.groupBy(pageEvent.get("pageName"));
+//    return em.createQuery(query).getResultList();
+//  }
 }

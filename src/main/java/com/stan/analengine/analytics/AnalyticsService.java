@@ -3,12 +3,13 @@ package com.stan.analengine.analytics;
 import com.stan.analengine.analytics.dto.DeviceQueryDto;
 import com.stan.analengine.analytics.dao.DeviceSearchDao;
 import com.stan.analengine.analytics.dto.PageViewsDto;
+import com.stan.analengine.analytics.dto.RangeGroup;
 import com.stan.analengine.analytics.dto.SeriesDto;
 import com.stan.analengine.model.Device;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -38,8 +39,12 @@ public class AnalyticsService {
 return null;
   }
 
-  public Object chatGPTQuery() {
-    return this.deviceSearchDao.findPageVisitCounts();
+  public Object chatGPTQuery(ZonedDateTime startDate, ZonedDateTime endDate, RangeGroup rangeGroup) {
+    return this.deviceSearchDao.findPageVisitCounts(startDate, endDate);
+  }
+
+  public Object findReferrers(ZonedDateTime startDate, ZonedDateTime endDate) {
+    return this.deviceSearchDao.findReferrers(startDate, endDate);
   }
 
 //  public Specification<Device> getSpecFromDatesAndExample(

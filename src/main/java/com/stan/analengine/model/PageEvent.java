@@ -7,9 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Builder
@@ -27,7 +25,8 @@ public class PageEvent {
   private Date endTime;
   private Integer activeTime;
   private Integer idleTime;
-  private Integer clickCount;
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<ClickLocation> clickLocations = new ArrayList<>();
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Set<ButtonClick> buttonClicks = new HashSet<>();
   private Integer buttonClickCount;
@@ -42,7 +41,7 @@ public class PageEvent {
 
   @CreationTimestamp
   @Column(nullable = false)
-  private ZonedDateTime created;
+  private ZonedDateTime created = ZonedDateTime.now();
 
   @UpdateTimestamp
   @Column(nullable = false)
@@ -62,5 +61,10 @@ public class PageEvent {
   public void addToLinkClicks(LinkClick linkClick) {
     linkClick.setBrowserEvent(this);
     this.linkClicks.add(linkClick);
+  }
+
+  public void addToClickLocations(ClickLocation clickLocation) {
+//    clickLocation.setBrowserEvent(this);
+    this.clickLocations.add(clickLocation);
   }
 }

@@ -1,5 +1,7 @@
 package com.stan.analengine.model;
 
+import com.stan.analengine.model.types.DeviceType;
+import com.stan.analengine.model.types.OsName;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,9 +40,9 @@ public class Device {
   private String timezone;
   private String browserName;
   private String browserVersion;
-  private String OSName;
+  private OsName OSName;
   private String OSVersion;
-  private String deviceType;
+  private DeviceType deviceType;
   private String deviceModel;
   private String deviceVendor;
   private String deviceScreenResolution;

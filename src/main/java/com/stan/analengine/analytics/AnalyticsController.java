@@ -2,11 +2,12 @@ package com.stan.analengine.analytics;
 
 import com.stan.analengine.analytics.dto.DeviceQueryDto;
 import com.stan.analengine.analytics.dto.PageViewsDto;
+import com.stan.analengine.analytics.dto.RangeGroup;
 import com.stan.analengine.model.Device;
-import com.stan.analengine.analytics.AnalyticsService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,29 @@ public class AnalyticsController {
   }
 
   @GetMapping("/gpt")
-  Object chatGPTQuery() {
-    return this.analyticsService.chatGPTQuery();
+  Object chatGPTQuery(
+      @RequestParam(value = "start_date", required = false) ZonedDateTime startDate,
+      @RequestParam(value = "end_date", required = false) ZonedDateTime endDate,
+      @RequestParam(value = "group_by", required = false) RangeGroup rangeGroup
+      ) {
+//    Date startDate = new Date();
+//    Instant startInstant = date.toInstant();
+//    ZoneId zoneId = ZoneId.of("America/Los_Angeles");
+//    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, zoneId);
+//
+//
+//    if (startDate == null) startDate = new ZonedDateTime(1);
+//    if (endDate == null) endDate = new ZonedDateTime();
+    if (rangeGroup == null) rangeGroup = RangeGroup.HOURLY;
+
+    return this.analyticsService.chatGPTQuery(startDate, endDate, rangeGroup);
+  }
+
+  @GetMapping("referrer")
+  Object findReferrers(
+      @RequestParam(value = "start_date", required = false) ZonedDateTime startDate,
+      @RequestParam(value = "end_date", required = false) ZonedDateTime endDate
+  ) {
+    return this.analyticsService.findReferrers(startDate, endDate);
   }
 }

@@ -13,6 +13,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,7 +108,7 @@ public class CaptureServiceImpl {
 //      updatingPage.setButtonClicks(pageEvent.getButtonClicks());
       updatingPage.setLinkClickCount(pageEvent.getLinkClickCount());
       updatingPage.setLinkClicks(pageEvent.getLinkClicks());
-      updatingPage.setClickCount(pageEvent.getClickCount());
+      updatingPage.setClickLocations(pageEvent.getClickLocations() );
       updatingPage.setActiveTime(pageEvent.getActiveTime());
       updatingPage.setEndTime(pageEvent.getEndTime());
       updatingPage.setIdleTime(pageEvent.getIdleTime());
@@ -121,9 +122,12 @@ public class CaptureServiceImpl {
       pageEvent.getLinkClicks().stream()
           .forEach(updatingPage::addToLinkClicks);
 
+      updatingPage.getClickLocations().addAll(pageEventDto.getClickLocations());
+
 //      browserEvent.addToPageEvent(updatingPage);
       pageEventRepo.save(updatingPage);
     } else {
+      pageEvent.setCreated(ZonedDateTime.now());
       browserEvent.addToPageEvent(pageEvent);
       this.eventRepo.save(browserEvent);
     }
@@ -175,7 +179,7 @@ public class CaptureServiceImpl {
         .endTime(dto.getEndTime())
         .activeTime(dto.getActiveTime())
         .idleTime(dto.getIdleTime())
-        .clickCount(dto.getClickCount())
+        .clickLocations(dto.getClickLocations())
         .buttonClicks(new HashSet<>())
         .buttonClickCount(dto.getButtonClickCount())
         .linkClicks(new HashSet<>())
