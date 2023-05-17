@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -33,13 +34,19 @@ public class BrowserEvent {
   private List<PageEvent> pageEvents;
   @CreationTimestamp
   @Column(nullable = false)
-  private ZonedDateTime created;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date created;
+
+  @CreationTimestamp
+  @Column(nullable = false)
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime createdAt;
 
   @UpdateTimestamp
   @Column(nullable = false)
-  private ZonedDateTime updated;
+  private Date updated;
 
-  private ZonedDateTime deleted;
+  private Date deleted;
 
   @Transient
   private Object loadVersion;

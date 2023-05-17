@@ -1,15 +1,11 @@
 package com.stan.analengine.analytics;
 
-import com.stan.analengine.analytics.dto.DeviceQueryDto;
+import com.stan.analengine.analytics.dto.*;
 import com.stan.analengine.analytics.dao.DeviceSearchDao;
-import com.stan.analengine.analytics.dto.PageViewsDto;
-import com.stan.analengine.analytics.dto.RangeGroup;
-import com.stan.analengine.analytics.dto.SeriesDto;
 import com.stan.analengine.model.Device;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -20,8 +16,8 @@ public class AnalyticsService {
 
   private final DeviceSearchDao deviceSearchDao;
 
-  public Set<Device> getVisitors(DeviceQueryDto queryDto) {
-    return this.deviceSearchDao.findAllByCriteriaQuery(queryDto);
+  public Object getVisitors(Date startDate, Date endDate, RangeGroup rangeGroup) {
+    return this.deviceSearchDao.findVisitors(startDate, endDate, rangeGroup);
 //    return null;
   }
 
@@ -31,20 +27,24 @@ public class AnalyticsService {
   }
 
   public List<PageViewsDto> getPageViews(Date startAt, Date endAt) {
-    SeriesDto unique = new SeriesDto("uniqueVisitors", 3);
-    SeriesDto general = new SeriesDto("general", 9);
-    List<SeriesDto> seriesDtos = List.of(unique, general);
 
-//    return List.of(new PageViewsDto("time", seriesDtos));
-return null;
+    return this.deviceSearchDao.findPageVisitCounts(null, null);
   }
 
-  public Object chatGPTQuery(ZonedDateTime startDate, ZonedDateTime endDate, RangeGroup rangeGroup) {
-    return this.deviceSearchDao.findPageVisitCounts(startDate, endDate);
-  }
+//  public Object chatGPTQuery(Date startDate, Date endDate, RangeGroup rangeGroup) {
+//    return this.deviceSearchDao.findPageVisitCounts(startDate, endDate);
+//  }
 
-  public Object findReferrers(ZonedDateTime startDate, ZonedDateTime endDate) {
+  public List<PropertyDto> findReferrers(Date startDate, Date endDate) {
     return this.deviceSearchDao.findReferrers(startDate, endDate);
+  }
+
+  public List<PropertyDto> findDeviceType(Date startDate, Date endDate) {
+    return this.deviceSearchDao.findDeviceProperty(startDate, endDate, "deviceType");
+  }
+
+  public List<PropertyDto> findOS(Date startDate, Date endDate) {
+    return this.deviceSearchDao.findDeviceProperty(startDate, endDate, "osName");
   }
 
 //  public Specification<Device> getSpecFromDatesAndExample(

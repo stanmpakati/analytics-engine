@@ -1,21 +1,20 @@
 package com.stan.analengine.capture;
 
 
-import com.stan.analengine.capture.dto.*;
-import com.stan.analengine.model.Device;
+import com.stan.analengine.capture.dto.ButtonClickDto;
+import com.stan.analengine.capture.dto.DeviceDto;
+import com.stan.analengine.capture.dto.LinkClickDto;
+import com.stan.analengine.capture.dto.PageEventDto;
 import com.stan.analengine.model.BrowserEvent;
+import com.stan.analengine.model.Device;
 import com.stan.analengine.model.PageEvent;
 import com.stan.analengine.repo.*;
 import com.stan.analengine.response.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -127,7 +126,7 @@ public class CaptureServiceImpl {
 //      browserEvent.addToPageEvent(updatingPage);
       pageEventRepo.save(updatingPage);
     } else {
-      pageEvent.setCreated(ZonedDateTime.now());
+      pageEvent.setCreated(new Date());
       browserEvent.addToPageEvent(pageEvent);
       this.eventRepo.save(browserEvent);
     }
@@ -216,8 +215,8 @@ public class CaptureServiceImpl {
         .deviceScreenSize(dto.getDeviceScreenSize())
         .networkDownLink(dto.getNetworkDownLink())
         .networkType(dto.getNetworkType())
-        .OSName(dto.getOSName())
-        .OSVersion(dto.getOSVersion())
+        .osName(dto.getOsName())
+        .osVersion(dto.getOsVersion())
         .deviceScreenOrientation(dto.getDeviceScreenOrientation())
         .deviceScreenResolution(dto.getDeviceScreenResolution())
         .referrer(dto.getReferrer())

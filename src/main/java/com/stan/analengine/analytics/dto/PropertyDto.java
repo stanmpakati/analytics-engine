@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ReferrerDto {
-  public String name;
+public class PropertyDto<T> {
+  public T name;
   public Long count;
 }

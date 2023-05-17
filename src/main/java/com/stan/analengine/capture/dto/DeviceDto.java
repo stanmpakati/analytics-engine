@@ -26,8 +26,8 @@ public class DeviceDto {
   private String timezone;
   private String browserName;
   private String browserVersion;
-  private OsName OSName;
-  private String OSVersion;
+  private OsName osName;
+  private String osVersion;
   private DeviceType deviceType;
   private String deviceModel;
   private String deviceVendor;

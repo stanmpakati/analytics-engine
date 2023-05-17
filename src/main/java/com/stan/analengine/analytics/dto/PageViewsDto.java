@@ -8,8 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class PageViewsDto {
-//  private String name;
-//  private List<SeriesDto> series;
   private String pageName;
   private Long visits;
   private Long uniqueVisits;

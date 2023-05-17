@@ -6,7 +6,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Entity
@@ -41,13 +40,13 @@ public class PageEvent {
 
   @CreationTimestamp
   @Column(nullable = false)
-  private ZonedDateTime created = ZonedDateTime.now();
+  private Date created = new Date();
 
   @UpdateTimestamp
   @Column(nullable = false)
-  private ZonedDateTime updated;
+  private Date updated;
 
-  private ZonedDateTime deleted;
+  private Date deleted;
 
   @Transient
   private Object loadVersion;

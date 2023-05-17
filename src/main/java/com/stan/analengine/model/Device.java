@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -40,8 +41,12 @@ public class Device {
   private String timezone;
   private String browserName;
   private String browserVersion;
-  private OsName OSName;
-  private String OSVersion;
+
+  @Enumerated(value = EnumType.STRING)
+  private OsName osName = OsName.UNIDENTIFIED;
+  private String osVersion;
+
+  @Enumerated(value = EnumType.STRING)
   private DeviceType deviceType;
   private String deviceModel;
   private String deviceVendor;
@@ -51,7 +56,13 @@ public class Device {
   private String deviceDescription;
   @CreationTimestamp
   @Column(nullable = false)
+  @Temporal(TemporalType.TIMESTAMP)
   private Date created;
+
+  @CreationTimestamp
+  @Column(nullable = false)
+  @Temporal(TemporalType.TIMESTAMP)
+  private ZonedDateTime createdAt;
   @UpdateTimestamp
   @Column(nullable = false)
   private Date updated;
