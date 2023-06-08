@@ -70,4 +70,6 @@ public class Device {
   @Transient
   private Object loadVersion;
 
+  public Device(String chrome, Date date) {
+  }
 }

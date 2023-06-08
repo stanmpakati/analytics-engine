@@ -16,6 +16,11 @@ public class AnalyticsController {
 
   private final AnalyticsService analyticsService;
 
+  @GetMapping("/health")
+  public String getHealth() {
+    return "Running";
+  }
+
   @GetMapping("/visitors")
   public Object getVisitors(
       @RequestParam(value = "start_date", required = false) Date startDate,
@@ -37,30 +42,11 @@ public class AnalyticsController {
     if (startDate == null) startDate = new Date(1);
     if (endDate == null) endDate = new Date();
 
-    return this.analyticsService.getPageViews(startDate, endDate);
+    return this.analyticsService.getPageViews(startDate, endDate, RangeGroup.MONTHLY);
   }
 
-//  @GetMapping("/gpt")
-//  Object chatGPTQuery(
-//      @RequestParam(value = "start_date", required = false) Date startDate,
-//      @RequestParam(value = "end_date", required = false) Date endDate,
-//      @RequestParam(value = "group_by", required = false) RangeGroup rangeGroup
-//      ) {
-////    Date startDate = new Date();
-////    Instant startInstant = date.toInstant();
-////    ZoneId zoneId = ZoneId.of("America/Los_Angeles");
-////    Date zonedDateTime = Date.ofInstant(instant, zoneId);
-////
-////
-////    if (startDate == null) startDate = new Date(1);
-////    if (endDate == null) endDate = new Date();
-//    if (rangeGroup == null) rangeGroup = RangeGroup.HOURLY;
-//
-//    return this.analyticsService.getPageViews(startDate, endDate, rangeGroup);
-//  }
-
   @GetMapping("referrer")
-  public Object findReferrers(
+  public List<PropertyDto> findReferrers(
       @RequestParam(value = "start_date", required = false) Date startDate,
       @RequestParam(value = "end_date", required = false) Date endDate
   ) {

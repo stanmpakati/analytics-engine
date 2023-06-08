@@ -60,29 +60,12 @@ public class DeviceSearchDao {
     Root<BrowserEvent> browserEventRoot = query.from(BrowserEvent.class);
     Join<BrowserEvent, Device> deviceJoin = browserEventRoot.join("device");
 
-//    query.multiselect(cb.function("month", Integer.class, browserEventRoot.get("created")), cb.count(browserEventRoot));
-
     Expression<Integer> month = cb.function("month", Integer.class, browserEventRoot.get("createdAt"));
     Predicate predicate = cb.between(month, 1, 12);
 
     query.where(predicate);
-//    query.where(cb.between(browserEventRoot.get("created"), startDate, endDate));
-
-//    query.groupBy(cb.function("month", Integer.class, browserEventRoot.get("created")));
-
     List<Object[]> results = em.createQuery(query).getResultList();
     return results;
-//    return results.stream().map(o -> new PageViewsDto((String) o[0], (Long) o[1], (Long) o[2])).collect(Collectors.toList());
-    // Loop through the 24 hours of the day and get the records for each hour
-//    List<Record> records = new ArrayList<>();
-//    for (int i = 0; i < 24; i++) {
-//      query.setParameter("startHour", i);
-//      query.setParameter("endHour", i + 1);
-//      records.addAll(query.getResultList());
-//    }
-//
-//    return records;
-
 
   }
 
@@ -103,28 +86,6 @@ public class DeviceSearchDao {
 
     return query.getResultStream().map(BrowserEvent::getDevice).collect(Collectors.toSet());
   }
-
-//  public void getPageVisits(Date from, Date to) {
-//    CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-//
-//    CriteriaQuery<PageEvent> criteriaQuery = criteriaBuilder.createQuery(PageEvent.class);
-//
-//    List<Predicate> predicates = new ArrayList<>();
-//
-//    Root<PageEvent> root = criteriaQuery.from(PageEvent.class);
-//
-//    Predicate browserNamePredicate = criteriaBuilder
-//        .like(root.get("pageName"), "%" + deviceQueryDto.getBrowserName() + "%");
-//    predicates.add(browserNamePredicate);
-//
-//    Predicate activeEvents = criteriaBuilder
-//        .between(root.get("created"), from, to);
-//
-//    criteriaQuery.where(activeEvents);
-//
-//    TypedQuery<PageEvent> query = em.createQuery(criteriaQuery);
-//
-//  }
 
   public List<PageViewsDto> findPageVisitCounts(Date startDate, Date endDate) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -183,15 +144,4 @@ public class DeviceSearchDao {
     return results.stream().map(o -> new PropertyDto(o[0], (Long) o[1])).collect(Collectors.toList());
   }
 
-
-//  public List<Object[]> findPageVisitCounts(Date startDate, Date endDate) {
-//    CriteriaBuilder cb = em.getCriteriaBuilder();
-//    CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
-//    Root<BrowserEvent> browserEvent = query.from(BrowserEvent.class);
-//    Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
-//    query.multiselect(pageEvent.get("pageName"), cb.count(browserEvent), cb.countDistinct(browserEvent.get("device")));
-//    query.where(cb.between(browserEvent.get("created"), startDate, endDate));
-//    query.groupBy(pageEvent.get("pageName"));
-//    return em.createQuery(query).getResultList();
-//  }
 }

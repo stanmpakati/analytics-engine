@@ -26,7 +26,7 @@ public class AnalyticsService {
 //    return null;
   }
 
-  public List<PageViewsDto> getPageViews(Date startAt, Date endAt) {
+  public List<PageViewsDto> getPageViews(Date startAt, Date endAt, RangeGroup rangeGroup) {
 
     return this.deviceSearchDao.findPageVisitCounts(null, null);
   }
@@ -45,6 +45,10 @@ public class AnalyticsService {
 
   public List<PropertyDto> findOS(Date startDate, Date endDate) {
     return this.deviceSearchDao.findDeviceProperty(startDate, endDate, "osName");
+  }
+
+  public List<PropertyDto> findBrowsers(Date startDate, Date endDate) {
+    return this.deviceSearchDao.findDeviceProperty(startDate, endDate, "browserName");
   }
 
 //  public Specification<Device> getSpecFromDatesAndExample(

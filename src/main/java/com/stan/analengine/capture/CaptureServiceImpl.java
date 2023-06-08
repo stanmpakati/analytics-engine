@@ -71,9 +71,6 @@ public class CaptureServiceImpl {
       throw new ResourceNotFoundException("Device not found");
     }
 
-//    convertedEvent.getLinkClicks().stream().forEach(convertedEvent::addToLinkClicks);
-//    convertedEvent.getButtonClicks().forEach(convertedEvent::addToButtonClicks);
-
     Optional<BrowserEvent> eventOptional = this.getBrowserEventFromSessionId(clientSessionId);
     if (eventOptional.isPresent()) {
       BrowserEvent browserEvent = eventOptional.get();

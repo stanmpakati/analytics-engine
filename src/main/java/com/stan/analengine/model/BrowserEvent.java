@@ -56,6 +56,9 @@ public class BrowserEvent {
     this.clientSessionId = clientSessionId;
   }
 
+  public BrowserEvent(Device device1, Date date) {
+  }
+
 
   public void addToPageEvent(PageEvent pageEvent) {
     pageEvent.setBrowserEvent(this);

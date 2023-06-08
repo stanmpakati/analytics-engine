@@ -1,8 +1,13 @@
 package com.stan.analengine.response;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +18,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestControllerAdvice
@@ -62,7 +69,7 @@ public class ExceptionControllerAdvice {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<CustomExceptionTemplate> HttpMessageNotReadableException(final HttpMessageNotReadableException e) {
     CustomExceptionTemplate exceptionTemplate = CustomExceptionTemplate.builder()
-        .message("Invalid Data")
+        .message("Un-understandable Data")
         .code("400")
         .errors(Collections.singletonList(e.getMessage()))
         .build();
@@ -140,9 +147,15 @@ public class ExceptionControllerAdvice {
   private ResponseEntity<CustomExceptionTemplate> error(final Exception exception, final HttpStatus httpStatus) {
     final String message = Optional.ofNullable(exception.getMessage()).orElse(exception.getClass().getSimpleName());
     CustomExceptionTemplate exceptionTemplate = CustomExceptionTemplate.builder()
-        .message("Invalid Data")
+        .message("This other error")
         .code("400")
         .build();
     return new ResponseEntity<>(exceptionTemplate, httpStatus);
+  }
+
+
+  @ExceptionHandler(Exception.class)
+  public void handleException(HttpServletResponse res) throws IOException {
+    res.sendError(HttpStatus.BAD_REQUEST.value(), "Something went wrong");
   }
 }

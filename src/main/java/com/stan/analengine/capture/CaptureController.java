@@ -26,22 +26,14 @@ public class CaptureController {
   @PostMapping("/hit")
   @CrossOrigin
   public ResponseTemplate<UUID> initialLoad(@RequestBody DeviceDto browserData) {
-//    @CookieValue("deviceId") String deviceId,
-//    log.info("Cookie Value: {}", deviceId);
-    log.info("Browser data: {}", browserData);
+    log.info("System received Visitor data: {}", browserData);
 
     return ResponseHandler.generateOkResponse(this.captureService.initialLoad(browserData));
   }
 
-//  @PostMapping("/event")
-//  public BrowserEvent recordSession(@RequestBody BrowserEventDto browserEvent) {
-//    log.info("Browser data: {}", browserEvent);
-//    return this.captureService.captureBrowserEvents(browserEvent);
-//  }
-
   @PostMapping("/page-event")
   public void capturePageEvents(@RequestBody PageEventDto pageEventDto) {
-    log.info("page data: {}", pageEventDto);
+    log.info("System Received page interaction data: {}", pageEventDto);
     this.captureService.recordPageEvents(pageEventDto);
   }
 
