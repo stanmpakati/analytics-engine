@@ -28,7 +28,12 @@ public class AnalyticsService {
 
   public List<PageViewsDto> getPageViews(Date startAt, Date endAt, RangeGroup rangeGroup) {
 
-    return this.deviceSearchDao.findPageVisitCounts(null, null);
+    return this.deviceSearchDao.findPageVisitCounts(startAt, endAt);
+  }
+
+  public Object getAnalyticsOverview(Date startAt, Date endAt) {
+
+    return this.deviceSearchDao.findAnalyticsOverview(startAt, endAt);
   }
 
 //  public Object chatGPTQuery(Date startDate, Date endDate, RangeGroup rangeGroup) {
@@ -49,6 +54,10 @@ public class AnalyticsService {
 
   public List<PropertyDto> findBrowsers(Date startDate, Date endDate) {
     return this.deviceSearchDao.findDeviceProperty(startDate, endDate, "browserName");
+  }
+
+  public List<PropertyDto> findClicks(Date startDate, Date endDate) {
+    return this.deviceSearchDao.findClicks(startDate, endDate);
   }
 
 //  public Specification<Device> getSpecFromDatesAndExample(

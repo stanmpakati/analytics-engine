@@ -2,7 +2,7 @@ FROM maven:3.8.5-openjdk-18 AS MAVEN_BUILD
 
 MAINTAINER Stan Mpakati
 
-ENV SPRING_PROFILES_ACTIVE="staging"
+ENV SPRING_PROFILES_ACTIVE="prod"
 COPY pom.xml /build/
 COPY src /build/src/
 
