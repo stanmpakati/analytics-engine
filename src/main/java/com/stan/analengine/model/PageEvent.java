@@ -58,7 +58,7 @@ public class PageEvent {
   }
 
   public void addToLinkClicks(LinkClick linkClick) {
-    linkClick.setBrowserEvent(this);
+//    linkClick.setBrowserEvent(this);
     this.linkClicks.add(linkClick);
   }
 

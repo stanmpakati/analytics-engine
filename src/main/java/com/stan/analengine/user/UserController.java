@@ -1,5 +1,7 @@
 package com.stan.analengine.user;
 
+import com.stan.analengine.response.ResponseHandler;
+import com.stan.analengine.response.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +15,8 @@ public class UserController {
   private UserRepository userRepository;
 
   @GetMapping("/all")
-  public String hello() {
-    return "All users";
+  public ResponseTemplate<String> hello() {
+    return ResponseHandler.generateOkResponse("All users");
   }
   @PostMapping("/login")
   public User login(@RequestBody User user) {
@@ -27,16 +29,16 @@ public class UserController {
   }
 
   @PostMapping("/create")
-  public String createUser(@RequestBody User user) {
+  public ResponseTemplate<String> createUser(@RequestBody User user) {
     userRepository.save(user);
-    return "User created successfully";
+    return ResponseHandler.generateOkResponse("User created successfully");
   }
 
   @DeleteMapping("/{username}")
-  public String deleteUser(@PathVariable String username) {
+  public ResponseTemplate<String> deleteUser(@PathVariable String username) {
     User user = userRepository.findByUsername(username);
     userRepository.deleteById(user.getId());
-    return "User deleted successfully";
+    return ResponseHandler.generateOkResponse("User deleted successfully");
   }
 
   @GetMapping("")

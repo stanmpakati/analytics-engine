@@ -7,7 +7,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.dialect.function.CountFunction;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -120,7 +119,7 @@ public List<Object[]> findVisitors(Date startDate, Date endDate, RangeGroup rang
 
     // select number of browser events, browser events and average active time on browser
     query.multiselect(
-        cb.count(browserEvent),
+        cb.countDistinct(browserEvent),
         cb.countDistinct(browserEvent.get("device")),
         cb.count(browserEvent),
         cb.avg(pageEvent.get("activeTime")));
@@ -170,30 +169,95 @@ public List<Object[]> findVisitors(Date startDate, Date endDate, RangeGroup rang
     return results.stream().map(o -> new PropertyDto((String) o[0], (Long) o[1])).collect(Collectors.toList());
   }
 
-  public List<PropertyDto> findClicks(Date startDate, Date endDate) {
+  public Object getLinkClicks(Date startDate, Date endDate) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
 
     CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
 
-    Root<BrowserEvent> browserEvent = query.from(BrowserEvent.class);
-    Join<BrowserEvent, PageEvent> pageEvent = browserEvent.join("pageEvents");
+    Root<PageEvent> pageEvent = query.from(PageEvent.class);
     Join<PageEvent, LinkClick> linkClickJoin = pageEvent.join("linkClicks");
-    Join<PageEvent, ButtonClick> buttonClickJoin = pageEvent.join("buttonClicks");
 
+    if (startDate != null && endDate != null) {
+      query.where(cb.between(pageEvent.get("created"), startDate, endDate));
+    }
 
     query.multiselect(
+        pageEvent.get("pageName"),
+//        cb.countDistinct(pageEvent),
+        cb.countDistinct(linkClickJoin),
         linkClickJoin.get("linkName"),
-        cb.count(pageEvent.get("linkClicks"))
+        linkClickJoin.get("linkDestination")
     );
 
-    // Todo filter date
-    if (startDate != null && endDate != null) {
-      query.where(cb.between(browserEvent.get("created"), startDate, endDate));
-    }
-    query.groupBy(pageEvent.get("linkClicks"));
+    query.groupBy(
+        pageEvent.get("pageName"),
+        linkClickJoin.get("linkName"),
+        linkClickJoin.get("linkDestination")
+    );
 
     List<Object[]> results = em.createQuery(query).getResultList();
-    return results.stream().map(o -> new PropertyDto((String) o[0], (Long) o[1])).collect(Collectors.toList());
+    return results.stream().map(o -> new LinkClicksDto((String) o[0], Math.toIntExact((Long) o[1]), (String) o[2], (String) o[3]))
+        .collect(Collectors.toList());
+  }
+
+//  public Object getButtonClicks() {
+//    CriteriaBuilder cb = em.getCriteriaBuilder();
+//
+//    CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+//
+//    Root<PageEvent> pageEvent = query.from(PageEvent.class);
+//
+////    Join<PageEvent, LinkClick> linkClickJoin = pageEvent.join("linkClicks");
+//    Join<PageEvent, ButtonClick> buttonClickJoin = pageEvent.join("buttonClicks");
+//
+//    query.multiselect(
+//        pageEvent.get("pageName"),
+////        cb.countDistinct(pageEvent),
+////        cb.countDistinct(linkClickJoin),
+////        linkClickJoin.get("linkName")
+//        cb.countDistinct(buttonClickJoin),
+//        buttonClickJoin.get("buttonName")
+//    );
+//
+//    query.groupBy(
+//        pageEvent.get("pageName"),
+////        linkClickJoin.get("linkName")
+//        buttonClickJoin.get("buttonName")
+//    );
+//
+//    List<Object[]> results = em.createQuery(query).getResultList();
+//    return results;
+//  }
+
+
+  public Object findButtonClicks(Date startDate, Date endDate) {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+
+    Root<PageEvent> pageEvent = query.from(PageEvent.class);
+    Join<PageEvent, ButtonClick> buttonClickJoin = pageEvent.join("buttonClicks");
+
+    // Todo factor for one date but no other one
+    if (startDate != null && endDate != null) {
+      query.where(cb.between(pageEvent.get("created"), startDate, endDate));
+    }
+
+    query.multiselect(
+        pageEvent.get("pageName"),
+//        cb.count(pageEvent),
+        cb.count(buttonClickJoin),
+        buttonClickJoin.get("buttonName")
+//        cb.count(buttonClickJoin)
+        );
+
+    query.groupBy(pageEvent.get("pageName"), buttonClickJoin.get("buttonName"));
+
+    List<Object[]> results = em.createQuery(query).getResultList();
+    return results.stream()
+        .map(o -> new ButtonClicksDto((String) o[0], Math.toIntExact((Long) o[1]),  (String) o[2]))
+        .collect(Collectors.toList());
+//    return results;
   }
 
   public List<PropertyDto> findDeviceProperty(Date startDate, Date endDate, String property) {

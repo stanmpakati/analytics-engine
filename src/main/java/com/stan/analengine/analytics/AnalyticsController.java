@@ -1,8 +1,6 @@
 package com.stan.analengine.analytics;
 
 import com.stan.analengine.analytics.dto.*;
-import com.stan.analengine.model.Device;
-import com.stan.analengine.user.User;
 import com.stan.analengine.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/analytics")
@@ -124,15 +121,28 @@ public class AnalyticsController {
     return this.analyticsService.findBrowsers(startDate, endDate);
   }
 
-  @GetMapping("/clicks")
-  public List<PropertyDto> findClicks(
+  @GetMapping("/button-clicks")
+  public Object findClicks(
+//  public List<PropertyDto> findButtonClicks(
       @RequestParam(value = "startDate", required = false) String startDateIso,
       @RequestParam(value = "endDate", required = false) String endDateIso
   ) {
     Date startDate = Date.from( Instant.parse(startDateIso));
     Date endDate = Date.from(Instant.parse(endDateIso));
 
-    return this.analyticsService.findClicks(startDate, endDate);
+    return this.analyticsService.findButtonClicks(startDate, endDate);
+  }
+
+  @GetMapping("/link-clicks")
+  public Object findLinkClicks(
+//  public List<PropertyDto> findButtonClicks(
+      @RequestParam(value = "startDate", required = false) String startDateIso,
+      @RequestParam(value = "endDate", required = false) String endDateIso
+  ) {
+    Date startDate = Date.from( Instant.parse(startDateIso));
+    Date endDate = Date.from(Instant.parse(endDateIso));
+
+    return this.analyticsService.findLinkClicks(startDate, endDate);
   }
 
 }

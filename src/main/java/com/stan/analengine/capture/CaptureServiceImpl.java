@@ -104,7 +104,7 @@ public class CaptureServiceImpl {
 //      updatingPage.setButtonClicks(pageEvent.getButtonClicks());
       updatingPage.setLinkClickCount(pageEvent.getLinkClickCount());
       updatingPage.setLinkClicks(pageEvent.getLinkClicks());
-      updatingPage.setClickLocations(pageEvent.getClickLocations() );
+//      updatingPage.setClickLocations(pageEvent.getClickLocations() );
       updatingPage.setActiveTime(pageEvent.getActiveTime());
       updatingPage.setEndTime(pageEvent.getEndTime());
       updatingPage.setIdleTime(pageEvent.getIdleTime());
@@ -112,13 +112,23 @@ public class CaptureServiceImpl {
       updatingPage.setScrollCount(pageEvent.getScrollCount());
 //      updatingPage.setBrowserEvent(browserEvent);
 
+      log.info("Im reaching line 115");
+
       pageEvent.getButtonClicks().stream()
           .forEach(updatingPage::addToButtonClicks);
+
+      log.info("Im reaching line 118");
 
       pageEvent.getLinkClicks().stream()
           .forEach(updatingPage::addToLinkClicks);
 
-      updatingPage.getClickLocations().addAll(pageEventDto.getClickLocations());
+      log.info("Im reaching line 121");
+
+//      updatingPage.getClickLocations().addAll(pageEventDto.getClickLocations());
+      pageEvent.getClickLocations().stream()
+          .forEach(updatingPage::addToClickLocations);
+
+      log.info("Im reaching line 120");
 
 //      browserEvent.addToPageEvent(updatingPage);
       pageEventRepo.save(updatingPage);

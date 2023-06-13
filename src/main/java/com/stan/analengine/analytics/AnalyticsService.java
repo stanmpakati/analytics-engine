@@ -56,8 +56,16 @@ public class AnalyticsService {
     return this.deviceSearchDao.findDeviceProperty(startDate, endDate, "browserName");
   }
 
-  public List<PropertyDto> findClicks(Date startDate, Date endDate) {
-    return this.deviceSearchDao.findClicks(startDate, endDate);
+  public Object findButtonClicks(Date startDate, Date endDate) {
+//  public List<PropertyDto> findButtonClicks(Date startDate, Date endDate) {
+//    return this.deviceSearchDao.findButtonClicks(startDate, endDate);
+    return this.deviceSearchDao.findButtonClicks(startDate, endDate);
+  }
+
+  public Object findLinkClicks(Date startDate, Date endDate) {
+//  public List<PropertyDto> findButtonClicks(Date startDate, Date endDate) {
+//    return this.deviceSearchDao.findButtonClicks(startDate, endDate);
+    return this.deviceSearchDao.getLinkClicks(startDate, endDate);
   }
 
 //  public Specification<Device> getSpecFromDatesAndExample(
